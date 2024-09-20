@@ -8,6 +8,7 @@
 ## Requirements
 
 Make sure you have this dependencies pre-installed,
+- 16 GB `.dmg` will be created hence make sure you have enough space
 - python3 
 - qemu-x86_64
 - `InstallAssistant.pkg` (Can be downlaoded externally from [Mr.macintosh](https://mrmacintosh.com/how-to-download-macos-catalina-mojave-or-high-sierra-full-installers/))
