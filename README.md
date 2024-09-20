@@ -15,6 +15,7 @@ Make sure you have this dependencies pre-installed,
 
 in `python` you must have this dependencies,
 ```
+git clone "https://www.github.com/Cdude1909/.pkg--.dmg-convertor/convertor.py"
 sudo pip install argparse lzma
 ```
 ## Run
