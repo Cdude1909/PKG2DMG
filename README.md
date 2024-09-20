@@ -1,5 +1,5 @@
 # `.PKG` -> `.DMG` Convertor
-### A tool to create `.dmg` from Apple's `.pkg`
+### A tool to create `.dmg` from Apple's `.pkg` 🎊
 ### NOTE: Runs on Linux/macOS only. Use VM for Windows.
 - The script will automatically create `.dmg` & save it to desired location.
 - it will be bootable hence can be used for Hackintosh or MacOS
