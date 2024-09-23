@@ -9,7 +9,7 @@
 
 Make sure you have this dependencies pre-installed,
 - 16 GB `.dmg` will be created hence make sure you have enough space
-- python3.3+ (it will cover all the required pip dependencies ;) ) 
+- Python3.3+ (it will cover all the required pip dependencies ;) ) 
 - `InstallAssistant.pkg` (Can be downloaded externally from [Mr.macintosh](https://mrmacintosh.com/how-to-download-macos-catalina-mojave-or-high-sierra-full-installers/))
 
 ## Run
