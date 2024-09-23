@@ -2,7 +2,7 @@
 ### A tool to create `.dmg` from Apple's `.pkg` 🎊
 ### NOTE: Runs on Linux only. Use VM for Windows.
 - The script will automatically create `.dmg` & save it to desired location.
-- it will be bootable hence can be used for Hackintosh or MacOS
+- `.dmg` will be bootable hence can be used for Hackintosh or offical Mac
 - also works with my another script [Automated-macOS-Installer](https://www.github.com/cdude1909/Automated-macOS-Installer)
 
 ## Requirements
@@ -18,3 +18,7 @@ Simply,
 git clone https://www.github.com/Cdude1909/PKG2DMG/
 sudo ./pkg2dmg.sh
 ```
+
+## Miscellaneous
+- For vm,you may use `dmg2img` to convert `dmg` to `iso` and boot it in VM. However,it requires more complex steps.
+- it supports many macos bootable .pkg, untill they change the pattern. hence you can **re-use this script for newer versions.**  (Catalina -- Sequoia & maybe ahead...)
