@@ -17,6 +17,7 @@ Simply,
 ```
 git clone https://www.github.com/Cdude1909/PKG2DMG/
 cd pkg2dmg
+sudo chmod +x pkg2dmg.sh
 sudo ./pkg2dmg.sh
 ```
 
