@@ -1,22 +1,46 @@
 #!/bin/bash
 
+# Get user inputs
+get_inputs() {
+    echo "Enter the output directory for the DMG file: " 
+    read -r output_dir
+    output_dir=$(echo "$output_dir"| sed "s/'//g")
+    echo "Enter the path to the .pkg file: " 
+    read -r pkg_file
+    pkg_file=$(echo "$pkg_file"| sed "s/'//g")
+
+    # Validate inputs
+    if [ ! -d "$output_dir" ]; then
+        echo "Error: Output directory $output_dir does not exist."
+        exit 1
+    fi
+    if [ ! -f "$pkg_file" ]; then
+        echo "Error: .pkg file $pkg_file does not exist."
+        exit 1
+    fi
+
+    dmg_path="$output_dir/InstallMacOS.dmg"
+    mount_point="/mnt/apfs_dmg"
+    extract_dir="/tmp/pkg_extracted"
+}
+
 # Create a blank 16GB DMG file
 create_blank_dmg() {
     echo "Creating a 16GB DMG file at $dmg_path..."
-    dd if=/dev/zero of=$dmg_path bs=1M count=16384
+    dd if=/dev/zero of=$dmg_path bs=1G count=16384
 }
 
 # Format the DMG with HFS+
-format_dmg_hfs() {
-    echo "Formatting with HFS+..."
-    mkfs.hfsplus -v macOS_Installer $dmg_path
+format_dmg_apfs() {
+    echo "Formatting with APFS..."
+    mkfs.apfs -v macOS_Installer $dmg_path
 }
 
 # Extract .pkg file
 extract_pkg() {
     echo "Extracting .pkg..."
     mkdir -p $extract_dir
-    7z x -txar $pkg_file -o$extract_dir SharedSupport.dmg Payload
+    7z x -mmt$(nproc --all) -txar $pkg_file -o$extract_dir SharedSupport.dmg Payload
 }
 
 # Mount the DMG file
@@ -29,13 +53,13 @@ mount_dmg() {
 # Copy files to the mounted DMG
 copy_to_dmg() {
     echo "Copying files...(May take a while!)"
-    sudo cp -r $extract_dir/* $mount_point/
+    sudo rsync -az $extract_dir/* $mount_point/
 }
 
 # Call pbzx.py to decompress the payload
 decompress_payload() {
     echo "Decompressing Payload..."
-    cp $(dirname "$0")/pbzx.py $mount_point    
+    rsync -az $(dirname "$0")/pbzx.py $mount_point    
     cd $mount_point    
     python3 $mount_point/pbzx.py -n Payload | cpio -idmu
     mv Applications/* $mount_point/
@@ -53,6 +77,14 @@ unmount_dmg() {
     echo "Unmounting..."
     sudo umount $mount_point
 }
+
+# Clean up all the temporary files
+cleanup() {
+    echo "Cleaning up..."
+    rm -rf "$extract_dir"
+    echo "Process completed successfully."
+}
+
 display_art(){
     clear
     printf '\e[8;46;101t'  
@@ -109,37 +141,18 @@ EOF
 main() {
     printf '\e[107m\e[1;30m' 
     [ "$UID" -eq 0 ] || { echo "This script must be run as root."; exit 1;}
-   
-   
+
+    # Display art to welcome users
     display_art 
 
     # Get user inputs
-    echo "Enter the output directory for the DMG file: " 
-    read -r output_dir
-    output_dir=$(echo "$output_dir"| sed "s/'//g")
-    echo "Enter the path to the .pkg file: " 
-    read -r pkg_file
-    pkg_file=$(echo "$pkg_file"| sed "s/'//g")
-
-    # Validate inputs
-    if [ ! -d "$output_dir" ]; then
-        echo "Error: Output directory $output_dir does not exist."
-        exit 1
-    fi
-    if [ ! -f "$pkg_file" ]; then
-        echo "Error: .pkg file $pkg_file does not exist."
-        exit 1
-    fi
-
-    dmg_path="$output_dir/InstallMacOS.dmg"
-    mount_point="/mnt/hfs_dmg"
-    extract_dir="/tmp/pkg_extracted"
-
+    get_inputs
+    
     # Create blank DMG
     create_blank_dmg "$dmg_path"
 
-    # Format DMG with HFS+
-    format_dmg_hfs "$dmg_path"
+    # Format DMG with APFS
+    format_dmg_apfs "$dmg_path"
 
     # Extract .pkg
     extract_pkg "$pkg_file" "$extract_dir"
@@ -157,9 +170,7 @@ main() {
     unmount_dmg "$mount_point"
 
     # Clean up
-    echo "Cleaning up..."
-    rm -rf "$extract_dir"
-    echo "Process completed successfully."
+    cleanup
 }
 
 # Run the main function
